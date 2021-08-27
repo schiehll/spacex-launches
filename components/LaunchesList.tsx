@@ -19,9 +19,6 @@ export type Launch = {
   links: {
     video_link: string;
   };
-  rocket: {
-    rocket_name: string;
-  };
   thumbnail: string;
 };
 
@@ -40,6 +37,7 @@ const LaunchesList = ({ launches }: Props) => {
             border="1px solid"
             borderColor="gray.200"
             borderEndRadius="4px"
+            data-testid="launch"
           >
             <Box as="a" href={launch.links.video_link} target="_blank">
               <Box borderTopRadius="4px" overflow="hidden">
@@ -59,13 +57,13 @@ const LaunchesList = ({ launches }: Props) => {
                 align="flex-start"
                 minH="100%"
               >
-                <Heading size="xs" fontWeight="semibold">
+                <Heading size="xs" fontWeight="semibold" data-testid="mission">
                   {launch.mission_name}
                 </Heading>
-                <Text fontSize="xs" color="gray.400">
+                <Text fontSize="xs" color="gray.400" data-testid="date">
                   {dayjs(launch.launch_date_local).fromNow()}
                 </Text>
-                <Text fontSize="sm" color="gray.600">
+                <Text fontSize="sm" color="gray.600" data-testid="site">
                   {launch.launch_site.site_name_long}
                 </Text>
               </VStack>

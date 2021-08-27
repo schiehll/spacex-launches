@@ -1,5 +1,5 @@
 {
-  "{pages,components}/**/*.{js,ts,jsx,tsx}": [
+  "{pages,components,cypress}/**/*.{js,ts,jsx,tsx}": [
     "eslint --fix",
     "prettier --write"
   ]

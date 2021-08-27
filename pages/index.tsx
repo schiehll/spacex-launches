@@ -1,9 +1,18 @@
 import Head from "next/head";
 import getVideoId from "get-video-id";
 import { ApolloClient, ApolloError, InMemoryCache, gql } from "@apollo/client";
-import { Container } from "@chakra-ui/react";
+import {
+  Container,
+  Input,
+  InputGroup,
+  InputLeftElement,
+  VStack,
+} from "@chakra-ui/react";
 import ErrorMessage from "components/ErrorMessage";
 import LaunchesList, { Launch } from "components/LaunchesList";
+import { SearchIcon } from "@chakra-ui/icons";
+import { useCallback, useState } from "react";
+import debounce from "lodash.debounce";
 
 const client = new ApolloClient({
   uri: "https://api.spacex.land/graphql/",
@@ -24,9 +33,6 @@ export async function getServerSideProps() {
             }
             links {
               video_link
-            }
-            rocket {
-              rocket_name
             }
           }
         }
@@ -61,6 +67,18 @@ type Props = {
 };
 
 export default function Home({ launches, errorMessage }: Props) {
+  const [currentLaunches, setCurrentLaunches] = useState<Launch[]>(launches);
+
+  const handleSearch = useCallback(
+    (e) => {
+      const searchQuery = new RegExp(e.target.value, "i");
+      setCurrentLaunches(
+        launches.filter((launch) => launch.mission_name.match(searchQuery))
+      );
+    },
+    [launches]
+  );
+
   if (errorMessage) {
     return <ErrorMessage message={errorMessage} />;
   }
@@ -73,8 +91,21 @@ export default function Home({ launches, errorMessage }: Props) {
         <link rel="icon" href="/favicon.ico" />
       </Head>
 
-      <Container maxW="1400px">
-        <LaunchesList launches={launches} />
+      <Container maxW="1400px" paddingY="10">
+        <VStack spacing="10">
+          <InputGroup>
+            <InputLeftElement pointerEvents="none">
+              <SearchIcon color="gray.300" />
+            </InputLeftElement>
+            <Input
+              type="text"
+              placeholder="Search launch"
+              onChange={debounce(handleSearch, 500)}
+              data-testid="search"
+            />
+          </InputGroup>
+          <LaunchesList launches={currentLaunches} />
+        </VStack>
       </Container>
     </>
   );
